@@ -1,64 +1,64 @@
 #include <iostream>
 #include <vector>
-#include <cstring>
-#include <stack>
+#include <queue>
 
-#define MAX 1001
+#define MAX_N 1001
 
 using namespace std;
 
-int N, M, cnt, ans;
-vector<int> adjList[MAX];
-int visited[MAX];
+vector<int> adjList[MAX_N];
+bool visited[MAX_N];
+int N, M;
+int cnt;
+int ans = 1;
 
-void dfs() {
-    stack<int> stack;
-    int start;
-    for(int i = 1; i <= N; i++){
-        if(visited[i] == 0){
-            start = i;
-            break;
-        }
-    }  
+void bfs(int start) {
+    queue<int> q;
+    q.push(start);
 
-    stack.push(start);
+    while(!q.empty()) {
+        int now = q.front();
+        q.pop();
 
-    while(!stack.empty()) {
-        int now = stack.top();
-        stack.pop();
-        visited[now] = 1;
+        if(visited[now])
+            continue;
+
+        visited[now] = true;
         cnt++;
 
-        for(int node : adjList[now]) {
-            if(!visited[node]){
-                stack.push(node);
+        for(int next : adjList[now]) {
+            q.push(next);
+        }
+    }
+
+    if(cnt != N) {
+        for(int i = 1; i <= N; i++) {
+            if(!visited[i]) {
+                ans++;
+                bfs(i);
             }
         }
-    }  
+    }
 }
 
 int main() {
-    cin.tie(NULL);
-    ios::sync_with_stdio(false);
+    cin.tie(0);
+    ios::sync_with_stdio(0);
 
     cin >> N >> M;
 
     for(int i = 0; i < M; i++) {
-        int a, b;
-        cin >> a >> b;
+        int u, v;
 
-        adjList[a].push_back(b);
-        adjList[b].push_back(a);
-    }       
+        cin >> u >> v;
 
-    memset(visited, 0, sizeof(visited));
-    
-    while(cnt < N) {
-        ans++;
-        dfs();
+        adjList[u].push_back(v);
+        adjList[v].push_back(u);
     }
 
-    cout << ans << endl;
+    bfs(1);
+
+    cout << ans << "\n";
 
     return 0;
 }
